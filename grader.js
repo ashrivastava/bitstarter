@@ -68,7 +68,7 @@ var buildfn = function(htmlfile, checksfile) {
         if (result instanceof Error) {
             console.error('Error: ' + util.format(response.message));
         } else {
-            console.error("Wrote %s", htmlfile);
+            //console.error("Wrote %s", htmlfile);
             fs.writeFileSync(htmlfile, result);
             var checkJson = checkHtmlFile(htmlfile, checksfile);
             var outJson = JSON.stringify(checkJson, null, 4);
@@ -89,18 +89,45 @@ if(require.main == module) {
         .option('-u, --url <url>', 'web url', URL_DEFAULT)
         .parse(process.argv);
 
+//console.log(process.argv);
+    
 //console.log(program.url);
-    var htmlfile = "heroku-app.html";
-    var url = "http://immense-plateau-9447.herokuapp.com";
+
+
+var fileOption = false;
+var urlOption = false;
+
+//console.log(fileOption);
+//console.log(urlOption);
+
+process.argv.forEach(function(val, index, array) {
+  if (val == "--file")
+  { fileOption = true; }
+  if (val == "--url")
+  { urlOption = true; }
+
+});
+
+//console.log(fileOption);
+//console.log(urlOption);
+
+    if (urlOption)
+    {
+      var htmlfile = "heroku-app.html";
+    //var url = "http://immense-plateau-9447.herokuapp.com";
+      var url = program.url;
 //console.log(program.url);
 //console.log(url);
-    var response2console = buildfn(htmlfile, program.checks);
-    rest.get(url).on('complete', response2console);
-
-    // var checkJson = checkHtmlFile(program.file, program.checks);
+      var response2console = buildfn(htmlfile, program.checks);
+      rest.get(url).on('complete', response2console);
+    }
+    else if (fileOption)
+    {
+      var checkJson = checkHtmlFile(program.file, program.checks);
     // var checkJson = checkHtmlFile(htmlfile, program.checks);
-    // var outJson = JSON.stringify(checkJson, null, 4);
-    // console.log(outJson);
+      var outJson = JSON.stringify(checkJson, null, 4);
+      console.log(outJson);
+    }
 } else {
     exports.checkHtmlFile = checkHtmlFile;
 }
